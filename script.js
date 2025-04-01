@@ -14,6 +14,10 @@ async function getWeather() {
   const currentWeatherResponse = await fetch(currentWatherUrl);
   const currentWeatherData = await currentWeatherResponse.json();
   displayWeather(currentWeatherData);
+
+  const forecastResponse = await fetch(forecastUrl);
+  const forecastData = await forecastResponse.json();
+  displayForecast(forecastData);
 }
 
 function displayWeather(data) {
@@ -40,4 +44,29 @@ function displayWeather(data) {
     weatherIcon.src = iconUrl;
     weatherIcon.style.display = "block";
   }
+}
+
+function displayForecast(data) {
+  const forecastDiv = document.getElementById("forecast");
+  console.log(data);
+  const forecastTemps = data.list.slice(0, 8);
+
+  forecastDiv.innerHTML = "";
+
+  forecastTemps.forEach((item) => {
+    const dataTime = new Date(item.dt * 1000);
+    const hour = dataTime.getHours();
+    const temperature = Math.round(item.main.temp - 273.15);
+    const iconCode = item.weather[0].icon;
+    const iconUrl = `https://openweathermap.org/img/wn/${iconCode}.png`;
+
+    const itemHTMl = `
+        <div class="forecast-item">
+            <span>${hour}:00</span> 
+            <img src="${iconUrl}" alt="Forecast Weather Icon">
+            <span>${temperature}°C<span/>
+        </div>
+    `;
+    forecastDiv.innerHTML += itemHTMl;
+  });
 }
